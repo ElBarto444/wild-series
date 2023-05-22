@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -25,7 +24,7 @@ class ProgramController extends AbstractController
         if (!is_numeric($id)) {
             throw new NotFoundHttpException('404 - Page not found');
         }
-        return $this->render('program/program_id.html.twig', [
+        return $this->render('program/show.html.twig', [
             'program_id' => 'Série n°' . $id,
         ]);
     }
