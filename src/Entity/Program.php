@@ -7,8 +7,15 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProgramRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
+#[UniqueEntity(
+    fields: ['title'],
+    errorPath: 'title',
+    message: 'Ce nom est déjà utilisé, veuillez en spécifier un autre.'
+)]
 class Program
 {
     #[ORM\Id]
@@ -17,9 +24,20 @@ class Program
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le champ de titre ne doit pas excéder {{ value }} caractères.',
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+        pattern: '/plus belle la vie/i',
+        match: false,
+        message: 'On parle de vraies séries ici, alors range moi ta merde, merci.',
+    )]
     private ?string $synopsis = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -32,7 +50,8 @@ class Program
     #[ORM\OneToMany(mappedBy: 'program', targetEntity: Season::class)]
     private Collection $seasons;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->seasons = new ArrayCollection();
     }
 
