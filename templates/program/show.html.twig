@@ -17,11 +17,12 @@
 		<ul>
 			<li><a href="{{ path('program_season_show', { 'program': program.id, 'season': season.id } )}}">{{ season.title }}</a></li>
 		</ul>
-		{% endfor %}
+		
 	</div>
 
 	<a href="{{ path('app_season_index') }}">Ajouter une saison</a><br>
-
+	<a href="{{ path('app_season_edit', {'id': season.id}) }}">Éditer/supprimer une saison</a>
+		{% endfor %}
 	<a href="{{ path('program_index') }}">
         Retour à l'accueil
     </a>

@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
 #[UniqueEntity(
@@ -50,9 +51,13 @@ class Program
     #[ORM\OneToMany(mappedBy: 'program', targetEntity: Season::class)]
     private Collection $seasons;
 
+    #[ORM\ManyToMany(targetEntity: Actor::class, mappedBy: 'programs')]
+    private Collection $actors;
+
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
+        $this->actors = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -136,6 +141,33 @@ class Program
                 $season->setProgram(null);
             }
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Actor>
+     */
+    public function getActors(): Collection
+    {
+        return $this->actors;
+    }
+
+    public function addActor(Actor $actor): self
+    {
+        if (!$this->actors->contains($actor)) {
+            $this->actors->add($actor);
+            $actor->addProgram($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActor(Actor $actor): self
+    {
+        if ($this->actors->removeElement($actor)) {
+            $actor->removeProgram($this);
+        }
+
         return $this;
     }
 }

@@ -6,23 +6,29 @@ use App\Entity\Season;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Form\ProgramType;
-use App\Form\EntityType;
+use Doctrine\ORM\Mapping\Entity;
+use App\Repository\SeasonRepository;
 use App\Repository\ProgramRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/program', name: 'program_')]
 class ProgramController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(ProgramRepository $programRepository): Response
+    public function index(ProgramRepository $programRepository, RequestStack $requestStack): Response
     {
+        $session = $requestStack->getSession();
+
         $programs = $programRepository->findAll();
 
         return $this->render('program/index.html.twig', [
             'programs' => $programs,
+            'session' => $session,
         ]);
     }
 
@@ -38,6 +44,8 @@ class ProgramController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $programRepository->save($program, true);
 
+            $this->addFlash('success', 'La série a bien été ajoutée.');
+
             return $this->redirectToRoute('program_index');
         }
 
@@ -46,7 +54,7 @@ class ProgramController extends AbstractController
         ]);
     }
 
-    #[Route('/show/{id<^[0-9]+$>}', methods: ['GET'], name: 'show')]
+    #[Route('/show/{id}', methods: ['GET'], name: 'show')]
     public function show(
         Program $program,
     ): Response {

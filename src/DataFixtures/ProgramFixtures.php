@@ -2,10 +2,12 @@
 
 namespace App\DataFixtures;
 
+use Faker\Factory;
+use App\Entity\Actor;
 use App\Entity\Program;
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\Persistence\ObjectManager;
 
 class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -45,6 +47,8 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager)
     {
+        $faker = Factory::create();
+        $actor = new Actor();
         $i = 0;
         foreach (self::PROGRAMS as $key => $programs) {
             $program = new Program();
